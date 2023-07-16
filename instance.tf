@@ -55,9 +55,9 @@ resource "aws_instance" "web-public" {
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.public_subnet[0].id
   vpc_security_group_ids      = [aws_security_group.public_sg.id]
-  key_name                    = "keypair"
+  key_name                    = "awskey"
   associate_public_ip_address = true
-
+  user_data                   = file("2048.sh")
  tags = {
   Name = "${var.env_code[0]}-public"
   }
@@ -77,7 +77,7 @@ resource "aws_security_group" "private_sg" {
     from_port        = 22
     to_port          = 22
     protocol         = "tcp"
-    cidr_blocks      = ["124.123.172.108/32"]
+    cidr_blocks      = [var.vpc_cidr]
     
   }
 
@@ -109,9 +109,7 @@ resource "aws_instance" "web-private" {
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.private_subnet[0].id
   vpc_security_group_ids      = [aws_security_group.private_sg.id]
-  key_name                    = "keypair"
-  associate_public_ip_address = true
-
+  key_name                    = "awskey"
  tags = {
   Name = "${var.env_code[0]}-private"
   }
