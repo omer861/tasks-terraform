@@ -24,7 +24,7 @@ resource "aws_security_group" "public_sg" {
     from_port        = 22
     to_port          = 22
     protocol         = "tcp"
-    cidr_blocks      = ["124.123.172.108/32"]
+    cidr_blocks      = ["124.123.190.134/32"]
     
   }
 
@@ -33,7 +33,7 @@ resource "aws_security_group" "public_sg" {
     from_port        = 80
     to_port          = 80
     protocol         = "tcp"
-    cidr_blocks      = ["124.123.172.108/32"]
+    cidr_blocks      = ["0.0.0.0/0"]
     
   }
 
@@ -86,7 +86,7 @@ resource "aws_security_group" "private_sg" {
     from_port        = 80
     to_port          = 80
     protocol         = "tcp"
-    cidr_blocks      = ["124.123.172.108/32"]
+    cidr_blocks      = ["0.0.0.0/0"]
     
   }
 
