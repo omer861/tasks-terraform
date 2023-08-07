@@ -11,8 +11,8 @@ terraform {
 
 terraform {
   backend "s3" {
-    bucket = "terraformbuck861"
-    key    = "tasks-terraform/level2.tfstate"
+    bucket = "task-terraform"
+    key    = "level2.tfstate"
     region = "ap-south-1"
     dynamodb_table = "terraform-lock"
   }

@@ -16,60 +16,47 @@ data "aws_ami" "amazonlinux" {
 
 resource "aws_security_group" "public_sg" {
   name        = "public_sg"
-  description = "public_sg inbound traffic"
-   vpc_id      = data.terraform_remote_state.level1.outputs.vpc_id
+  description = "allows public traffic"
+  vpc_id      = data.terraform_remote_state.level1.outputs.vpc_id
 
   ingress {
-    description      = "ssh rule"
-    from_port        = 22
-    to_port          = 22
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    
-  }
-
-  ingress {
-    description      = "http rule"
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    
+    description = "SHH from home office"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["124.123.162.52/32"]
   }
 
   egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
+  
   tags = {
-    Name = "${var.env_code[0]}-sg group-public"
+    Name = "public_sg"
   }
 }
 
-resource "aws_instance" "web-public" {
+resource "aws_instance" "public" {
   ami                         = data.aws_ami.amazonlinux.id
   instance_type               = "t2.micro"
   subnet_id                   = data.terraform_remote_state.level1.outputs.public_subnet[0]
   vpc_security_group_ids      = [aws_security_group.public_sg.id]
   key_name                    = "awskey"
   associate_public_ip_address = true
-  user_data                   = file("2048.sh")
- tags = {
-  Name = "${var.env_code[0]}-public"
+
+  tags = {
+    Name = "public_instance"
   }
 }
 
 
-
-
-
 resource "aws_security_group" "private_sg" {
   name        = "private_sg"
-  description = "public_sg inbound traffic"
+  description = "private_sg inbound traffic"
   vpc_id      = data.terraform_remote_state.level1.outputs.vpc_id
 
   
@@ -87,7 +74,7 @@ resource "aws_security_group" "private_sg" {
     from_port        = 80
     to_port          = 80
     protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.lb_sg.id]
     
   }
 
@@ -100,19 +87,21 @@ resource "aws_security_group" "private_sg" {
   }
 
   tags = {
-    Name = "${var.env_code[0]}-sg group-public-private"
+    Name = "sg group-private"
   }
 }
 
 
 resource "aws_instance" "web-private" {
+  count = 2
   ami                         = data.aws_ami.amazonlinux.id
   instance_type               = "t2.micro"
-  subnet_id                   = data.terraform_remote_state.level1.outputs.private_subnet[0]
+  subnet_id                   = data.terraform_remote_state.level1.outputs.private_subnet[count.index]
   vpc_security_group_ids      = [aws_security_group.private_sg.id]
   key_name                    = "awskey"
+  user_data                   = file("host.sh")
  tags = {
-  Name = "${var.env_code[0]}-private"
+  Name = "private_instance"
   }
 }
 
