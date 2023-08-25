@@ -40,18 +40,7 @@ resource "aws_security_group" "public_sg" {
   }
 }
 
-resource "aws_instance" "public" {
-  ami                         = data.aws_ami.amazonlinux.id
-  instance_type               = "t2.micro"
-  subnet_id                   = data.terraform_remote_state.level1.outputs.public_subnet[0]
-  vpc_security_group_ids      = [aws_security_group.public_sg.id]
-  key_name                    = "awskey"
-  associate_public_ip_address = true
 
-  tags = {
-    Name = "public_instance"
-  }
-}
 
 
 resource "aws_security_group" "private_sg" {
@@ -91,18 +80,5 @@ resource "aws_security_group" "private_sg" {
   }
 }
 
-
-resource "aws_instance" "web-private" {
-  count = 2
-  ami                         = data.aws_ami.amazonlinux.id
-  instance_type               = "t2.micro"
-  subnet_id                   = data.terraform_remote_state.level1.outputs.private_subnet[count.index]
-  vpc_security_group_ids      = [aws_security_group.private_sg.id]
-  key_name                    = "awskey"
-  user_data                   = file("host.sh")
- tags = {
-  Name = "private_instance"
-  }
-}
 
 

@@ -55,19 +55,3 @@ resource "aws_lb_target_group" "my_target_group" {
   }
 }
 
-resource "aws_lb_target_group_attachment" "test" {
-  count = length(aws_instance.web-private)
-  target_group_arn = aws_lb_target_group.my_target_group.arn
-  target_id        = aws_instance.web-private[count.index].id
-  port             = 80
-}
-
-
-resource "aws_lb_listener" "my_listener" {
-  load_balancer_arn = aws_lb.aws_lb.arn
-  port              = 80
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.my_target_group.arn
-}
-}
