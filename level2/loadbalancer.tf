@@ -55,3 +55,13 @@ resource "aws_lb_target_group" "my_target_group" {
   }
 }
 
+
+resource "aws_lb_listener" "lb_list" {
+  load_balancer_arn = aws_lb.aws_lb.arn
+port = 80
+  default_action {
+    target_group_arn = aws_lb_target_group.my_target_group.arn
+    type             = "forward"
+   
+  }
+}

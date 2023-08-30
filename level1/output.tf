@@ -3,6 +3,8 @@ output "vpc_id" {
 }
 
 
+
+
 output "vpc_cidr" {
   value = aws_vpc.myvpc.cidr_block
 }

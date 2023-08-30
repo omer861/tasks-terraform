@@ -15,10 +15,10 @@ EOF
   
   network_interfaces {
     associate_public_ip_address = true
+    security_groups = [aws_security_group.level2_public_sg.id]  # Use security_groups inside network_interfaces
   }
-
-  security_group_names = [aws_security_group.public_sg.name]
 }
+
 
 resource "aws_autoscaling_group" "asg" {
   name             = "my-asg"
@@ -30,8 +30,7 @@ resource "aws_autoscaling_group" "asg" {
     id      = aws_launch_template.launch_template.id
     version = "$Latest"
   }
-
-  vpc_zone_identifier = [data.terraform_remote_state.level1.outputs.myvpc.id]
+  vpc_zone_identifier = [data.terraform_remote_state.level1.outputs.public_subnet[0]]
   target_group_arns = [aws_lb_target_group.my_target_group.arn]
   
 
